@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      BROWSER_PROFILE_DIR: /data/browser-profile
+      BROWSER_HEADLESS: "false"
+      MAX_CONCURRENT_JOBS: "1"
+      CORS_ORIGINS: "http://localhost:8080,https://localhost,capacitor://localhost"
+    volumes:
+      - video_data:/data
+    shm_size: 1gb
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: mobile/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "8080:80"
+
+volumes:
+  video_data:

@@ -1,0 +1,5 @@
+yt-dlp>=2025.1.15
+# Keep this within yt-dlp's supported range. New curl-cffi major/minor
+# releases can temporarily be rejected until yt-dlp verifies compatibility.
+curl-cffi>=0.11,<0.16
+playwright>=1.50,<2

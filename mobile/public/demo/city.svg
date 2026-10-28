@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144 96">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#10134a"/><stop offset=".55" stop-color="#47236f"/><stop offset="1" stop-color="#111c50"/></linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#20255a"/><stop offset="1" stop-color="#090d28"/></linearGradient>
+  </defs>
+  <rect width="144" height="96" fill="url(#night)"/>
+  <circle cx="119" cy="18" r="9" fill="#79e6ff" opacity=".7"/>
+  <g fill="#141a45" stroke="#7759d9" stroke-width="1">
+    <path d="M6 27h22v49H6z"/><path d="M31 18h25v58H31z"/><path d="M60 31h18v45H60z"/><path d="M82 12h28v64H82z"/><path d="M114 34h24v42h-24z"/>
+  </g>
+  <g fill="#45d9ef"><path d="M11 34h5v4h-5zM20 43h4v4h-4zM37 27h5v4h-5zM47 39h5v4h-5zM66 40h5v4h-5zM88 22h5v5h-5zM99 33h5v4h-5zM120 43h5v4h-5z"/></g>
+  <g fill="#f458c8"><path d="M11 52h5v4h-5zM38 49h5v4h-5zM48 59h4v4h-4zM67 55h5v4h-5zM89 43h5v4h-5zM100 55h5v4h-5zM128 53h5v4h-5z"/></g>
+  <path d="M0 71h144v25H0z" fill="url(#road)"/>
+  <path d="M15 96 60 71M129 96 86 71" stroke="#e743ce" stroke-width="3" opacity=".8"/>
+  <path d="M35 96 72 71M108 96 79 71" stroke="#43d9ff" stroke-width="2" opacity=".75"/>
+</svg>
