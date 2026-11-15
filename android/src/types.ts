@@ -12,10 +12,11 @@ export interface Job {
   assets: Asset[]; caption: string; thumbnail?: string;
 }
 export interface Snapshot { jobs: Job[]; theme: Theme; remember: boolean; sharedText: string; }
+export type JobAction = 'cancel' | 'retry' | 'open' | 'export' | 'share'
 export interface LocalPlugin {
   snapshot(): Promise<Snapshot>;
   add(options: {text: string}): Promise<{id: string}>;
-  action(options: {id: string; action: 'cancel' | 'retry' | 'open' | 'export'}): Promise<void>;
+  action(options: {id: string; action: JobAction}): Promise<void>;
   preferences(options: {theme?: Theme; remember?: boolean}): Promise<void>;
   clearSession(): Promise<void>;
   copyCaption(options: {id: string}): Promise<void>;

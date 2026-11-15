@@ -1,6 +1,7 @@
 package com.shiying.local
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Intent
@@ -16,6 +17,7 @@ import com.getcapacitor.annotation.ActivityCallback
 import com.getcapacitor.annotation.CapacitorPlugin
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
 
 @CapacitorPlugin(name = "ShiyingLocal")
@@ -54,6 +56,10 @@ class ShiyingLocalPlugin : Plugin() {
                 activity.startActivity(open)
                 call.resolve()
             }
+            "share" -> {
+                shareVideo(job)
+                call.resolve()
+            }
             "export" -> {
                 require(job.optInt("done") > 0) { "尚无可导出的文件。" }
                 val choose = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION).putExtra(Intent.EXTRA_LOCAL_ONLY, true)
@@ -62,6 +68,42 @@ class ShiyingLocalPlugin : Plugin() {
             else -> { engine.action(id, action); call.resolve() }
         }
     } } }
+    private fun shareVideo(job: JSONObject) {
+        require(job.optString("kind") == "video" && job.optString("status") == "completed") {
+            "仅可分享已完成下载的视频。"
+        }
+        val unavailable = "视频文件不可用，请重新下载后再分享。"
+        val entries = job.getJSONArray("assets")
+        val entry = (0 until entries.length()).asSequence().map { entries.getJSONObject(it) }
+            .firstOrNull { it.optString("status") == "completed" && it.optString("mime") == "video/mp4" }
+            ?: error(unavailable)
+        val uri = Uri.parse(entry.optString("uri"))
+        val parts = uri.pathSegments
+        check(uri.scheme == "content" && uri.authority == "media" && uri.query == null && uri.fragment == null &&
+            parts.size == 4 && parts[1] == "video" && parts[2] == "media" && (parts[3].toLongOrNull() ?: 0) > 0) {
+            unavailable
+        }
+        val resolver = context.contentResolver
+        val readable = try {
+            resolver.openFileDescriptor(uri, "r")?.use { it.statSize != 0L } == true
+        } catch (_: FileNotFoundException) {
+            false
+        } catch (_: SecurityException) {
+            false
+        }
+        check(readable) { unavailable }
+        val send = Intent(Intent.ACTION_SEND).apply {
+            type = "video/mp4"
+            putExtra(Intent.EXTRA_STREAM, uri)
+            clipData = ClipData.newRawUri("拾影视频", uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try {
+            activity.startActivity(Intent.createChooser(send, null))
+        } catch (_: ActivityNotFoundException) {
+            error("无法打开系统分享面板。")
+        }
+    }
     @ActivityCallback private fun exportLocation(call: PluginCall?, result: ActivityResult) {
         if (call == null) return
         val tree = result.data?.data

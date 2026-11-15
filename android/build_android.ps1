@@ -49,12 +49,12 @@ try {
     if ($LASTEXITCODE) { throw '原生编译、检查或测试失败，请查看 Gradle 报错。' }
     $outputRoot = Join-Path $projectRoot 'releases'
     New-Item -ItemType Directory -Force $outputRoot | Out-Null
-    $apkPath = Join-Path $outputRoot 'Shiying-0.1.5-android.apk'
+    $apkPath = Join-Path $outputRoot 'Shiying-0.1.7-android.apk'
     Copy-Item -LiteralPath "$projectRoot\native\app\build\outputs\apk\release\app-release.apk" -Destination $apkPath -Force
     & "$env:ANDROID_HOME\build-tools\35.0.0\apksigner.bat" verify --verbose $apkPath
     if ($LASTEXITCODE) { throw 'APK 签名校验失败。' }
     $hash = (Get-FileHash -LiteralPath $apkPath -Algorithm SHA256).Hash.ToLowerInvariant()
-    [IO.File]::WriteAllText("$apkPath.sha256", "$hash  Shiying-0.1.5-android.apk`n", [Text.UTF8Encoding]::new($false))
+    [IO.File]::WriteAllText("$apkPath.sha256", "$hash  Shiying-0.1.7-android.apk`n", [Text.UTF8Encoding]::new($false))
     Write-Host "APK: $apkPath"
     Write-Host "SHA256: $hash"
     Write-Host '请备份 android/.signing；后续更新必须使用同一签名。'
